@@ -2,8 +2,15 @@ local push = require "push"
 
 WINDOW_WIDTH, WINDOW_HEIGHT = 1280, 720
 VIRTUAL_WIDTH, VIRTUAL_HEIGHT = 432, 243
+FONT_FILE = "font.ttf"
 
 function love.load()
+    small_font = love.graphics.newFont(
+        FONT_FILE, 8
+    )
+
+    love.graphics.setFont(small_font)
+
     love.graphics.setDefaultFilter(
         "nearest", "nearest"
     )
