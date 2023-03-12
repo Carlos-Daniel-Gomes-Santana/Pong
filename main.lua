@@ -1,12 +1,29 @@
 local push = require "push"
 
+
 WINDOW_WIDTH, WINDOW_HEIGHT = 1280, 720
 VIRTUAL_WIDTH, VIRTUAL_HEIGHT = 432, 243
+PADDLE_SPEED = 200
 FONT_FILE = "font.ttf"
 
+
+function love.keypressed(key)
+    if key == "q" then
+        love.event.quit()
+    end
+end
+
+
 function love.load()
+    player_1_score, player_2_score = 0, 0
+
+    player_1_y, player_2_y = 30, VIRTUAL_HEIGHT - 50
+
     small_font = love.graphics.newFont(
         FONT_FILE, 8
+    )
+    score_font = love.graphics.newFont(
+        FONT_FILE, 32
     )
 
     love.graphics.setFont(small_font)
@@ -24,11 +41,22 @@ function love.load()
     })
 end
 
-function love.keypressed(key)
-    if key == "q" then
-        love.event.quit()
+
+function love.update(dt)
+    if love.keyboard.isDown("w") then
+        player_1_y = player_1_y - PADDLE_SPEED*dt
+    elseif love.keyboard.isDown("s") then
+        player_1_y = player_1_y + PADDLE_SPEED*dt
     end
+
+    if love.keyboard.isDown("up") then
+        player_2_y = player_2_y - PADDLE_SPEED*dt
+    elseif love.keyboard.isDown("down") then
+        player_2_y = player_2_y + PADDLE_SPEED*dt
+    end
+    
 end
+
 
 function love.draw()
     push:apply("start")
@@ -46,16 +74,30 @@ function love.draw()
         "center"
     )
 
+    love.graphics.setFont(score_font)
+    love.graphics.print(
+        tostring(player_1_score),
+        VIRTUAL_WIDTH/2 - 50,
+        VIRTUAL_HEIGHT/3
+    )
+    love.graphics.print(
+        tostring(player_1_score),
+        VIRTUAL_WIDTH/2 + 30,
+        VIRTUAL_HEIGHT/3
+    )
+
+
     love.graphics.rectangle(
         "fill",
-        10, 30,
+        10,
+        player_1_y,
         5, 20
     )
     
     love.graphics.rectangle(
         "fill",
         VIRTUAL_WIDTH - 10,
-        VIRTUAL_HEIGHT - 50,
+        player_2_y - 50,
         5, 20
     )
 
