@@ -10,21 +10,44 @@ FONT_FILE = "font.ttf"
 function love.keypressed(key)
     if key == "q" then
         love.event.quit()
+    elseif key == "enter" or key == "return" then
+        if game_state == "start" then
+            game_state = "play"
+        else
+            game_state = "start"
+
+            ball_x, ball_y = VIRTUAL_WIDTH/2 - 2, VIRTUAL_HEIGHT/2 - 2
+
+            ball_speed_x = math.random(2) == 1 and 100 or -100
+            ball_speed_y = math.random(-50, 50)*1.5
+            
+        end
     end
 end
 
 
 function love.load()
+    game_state = "start"
+
     player_1_score, player_2_score = 0, 0
 
     player_1_y, player_2_y = 30, VIRTUAL_HEIGHT - 50
 
+    ball_x, ball_y = VIRTUAL_WIDTH/2 - 2, VIRTUAL_HEIGHT/2 - 2
+    
+    ball_speed_x = math.random(2) == 1 and 100 or -100
+
+    ball_speed_y = math.random(-50, 50)
+
     small_font = love.graphics.newFont(
         FONT_FILE, 8
     )
+
     score_font = love.graphics.newFont(
         FONT_FILE, 32
     )
+
+    math.randomseed(os.time())
 
     love.graphics.setFont(small_font)
 
@@ -55,6 +78,10 @@ function love.update(dt)
         player_2_y = player_2_y + PADDLE_SPEED*dt
     end
     
+    if game_state == "play" then
+        ball_x = ball_x + ball_speed_x*dt
+        ball_y = ball_y + ball_speed_y*dt
+    end
 end
 
 
@@ -68,24 +95,27 @@ function love.draw()
         255/255
     )
 
-    love.graphics.printf(
-        "Hello Pong!", 0,
-        20, VIRTUAL_WIDTH,
-        "center"
-    )
-
     love.graphics.setFont(score_font)
+    
+    if game_state == "start" then
+        love.graphics.printf(
+            "Hello Pong!", 0,
+            20, VIRTUAL_WIDTH,
+            "center"
+        )
+    end
+
     love.graphics.print(
         tostring(player_1_score),
         VIRTUAL_WIDTH/2 - 50,
         VIRTUAL_HEIGHT/3
     )
+    
     love.graphics.print(
         tostring(player_1_score),
         VIRTUAL_WIDTH/2 + 30,
         VIRTUAL_HEIGHT/3
     )
-
 
     love.graphics.rectangle(
         "fill",
@@ -103,10 +133,11 @@ function love.draw()
 
     love.graphics.rectangle(
         "fill",
-        VIRTUAL_WIDTH/2 - 2,
-        VIRTUAL_HEIGHT/2 - 2,
+        ball_x,
+        ball_y,
         4, 4
     )
+
 
     push:apply("end")
 end
