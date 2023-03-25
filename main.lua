@@ -65,12 +65,16 @@ function love.update(dt)
         player_1.speed_y = -PADDLE_SPEED
     elseif love.keyboard.isDown("s") then
         player_1.speed_y = PADDLE_SPEED
+    else
+        player_1.speed_y = 0
     end
 
     if love.keyboard.isDown("up") then
         player_2.speed_y = -PADDLE_SPEED
     elseif love.keyboard.isDown("down") then
         player_2.speed_y = PADDLE_SPEED
+    else
+        player_2.speed_y = 0
     end
     
     if game_state == "play" then

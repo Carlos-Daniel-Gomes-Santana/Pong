@@ -16,7 +16,7 @@ end
 
 function Paddle:update(dt)
     -- Update position
-    if self.y < 0 then
+    if self.speed_y < 0 then
         self.y = math.max(
             0,
             self.y + self.speed_y*dt
