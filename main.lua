@@ -85,6 +85,38 @@ function love.update(dt)
     end
     
     if game_state == "play" then
+        if ball:collides(player_1) then
+            ball.speed_x = -ball.speed_x*1.03
+            ball.x = player_1.x + 5
+            
+            if ball.speed_y < 0 then
+                ball.speed_y = -math.random(10, 150)
+            else
+                ball.speed_y = math.random(10, 150)
+            end
+        end
+
+        if ball:collides(player_2) then
+            ball.speed_x = -ball.speed_x*1.03
+            ball.x = player_2.x - 4
+            
+            if ball.speed_y < 0 then
+                ball.speed_y = -math.random(10, 150)
+            else
+                ball.speed_y = math.random(10, 150)
+            end
+        end
+
+        if ball.y <= 0 then
+            ball.y = 0
+            ball.speed_y = -ball.speed_y
+        end
+
+        if ball.y >= VIRTUAL_HEIGHT - 4 then
+            ball.y = VIRTUAL_HEIGHT - 4
+            ball.speed_y = -ball.speed_y
+        end
+
         ball:update(dt)
     end
 
@@ -129,7 +161,7 @@ function love.draw()
     player_2:render()
     
     ball:render()
-    
+
     displayFPS()
     
     push:apply("end")
