@@ -1,5 +1,6 @@
 local push = require "push"
-
+local Ball = require "Ball"
+local Paddle = require "Paddle"
 
 WINDOW_WIDTH, WINDOW_HEIGHT = 1280, 720
 VIRTUAL_WIDTH, VIRTUAL_HEIGHT = 432, 243
@@ -16,10 +17,7 @@ function love.keypressed(key)
         else
             game_state = "start"
 
-            ball_x, ball_y = VIRTUAL_WIDTH/2 - 2, VIRTUAL_HEIGHT/2 - 2
-
-            ball_speed_x = math.random(2) == 1 and 100 or -100
-            ball_speed_y = math.random(-50, 50)*1.5
+            ball:reset()
             
         end
     end
@@ -31,13 +29,10 @@ function love.load()
 
     player_1_score, player_2_score = 0, 0
 
-    player_1_y, player_2_y = 30, VIRTUAL_HEIGHT - 50
+    player_1 = Paddle(10, 30, 5, 20)
+    player_2 = Paddle(VIRTUAL_WIDTH - 10, VIRTUAL_HEIGHT - 30, 5, 20)
 
-    ball_x, ball_y = VIRTUAL_WIDTH/2 - 2, VIRTUAL_HEIGHT/2 - 2
-    
-    ball_speed_x = math.random(2) == 1 and 100 or -100
-
-    ball_speed_y = math.random(-50, 50)
+    ball = Ball(VIRTUAL_WIDTH / 2 - 2, VIRTUAL_HEIGHT / 2 - 2, 4, 4)
 
     small_font = love.graphics.newFont(
         FONT_FILE, 8
@@ -67,21 +62,23 @@ end
 
 function love.update(dt)
     if love.keyboard.isDown("w") then
-        player_1_y = player_1_y - PADDLE_SPEED*dt
+        player_1.speed_y = -PADDLE_SPEED
     elseif love.keyboard.isDown("s") then
-        player_1_y = player_1_y + PADDLE_SPEED*dt
+        player_1.speed_y = PADDLE_SPEED
     end
 
     if love.keyboard.isDown("up") then
-        player_2_y = player_2_y - PADDLE_SPEED*dt
+        player_2.speed_y = -PADDLE_SPEED
     elseif love.keyboard.isDown("down") then
-        player_2_y = player_2_y + PADDLE_SPEED*dt
+        player_2.speed_y = PADDLE_SPEED
     end
     
     if game_state == "play" then
-        ball_x = ball_x + ball_speed_x*dt
-        ball_y = ball_y + ball_speed_y*dt
+        ball:update(dt)
     end
+
+    player_1:update(dt)
+    player_2:update(dt)
 end
 
 
@@ -117,27 +114,10 @@ function love.draw()
         VIRTUAL_HEIGHT/3
     )
 
-    love.graphics.rectangle(
-        "fill",
-        10,
-        player_1_y,
-        5, 20
-    )
-    
-    love.graphics.rectangle(
-        "fill",
-        VIRTUAL_WIDTH - 10,
-        player_2_y - 50,
-        5, 20
-    )
+    player_1:render()
+    player_2:render()
 
-    love.graphics.rectangle(
-        "fill",
-        ball_x,
-        ball_y,
-        4, 4
-    )
-
+    ball:render()
 
     push:apply("end")
 end
