@@ -1,11 +1,18 @@
+-- Imports
 local push = require "push"
 local Ball = require "Ball"
 local Paddle = require "Paddle"
 
+
+-- Constat variables
 WINDOW_WIDTH, WINDOW_HEIGHT = 1280, 720
 VIRTUAL_WIDTH, VIRTUAL_HEIGHT = 432, 243
 PADDLE_SPEED = 200
 FONT_FILE = "font.ttf"
+
+
+-- set title window
+love.window.setTitle("Pong Game by Carlos_San")
 
 
 function love.keypressed(key)
@@ -88,14 +95,14 @@ end
 
 function love.draw()
     push:apply("start")
-
+    
     love.graphics.clear(
         40/255,
         45/255,
         52/255,
         255/255
     )
-
+    
     love.graphics.setFont(score_font)
     
     if game_state == "start" then
@@ -105,7 +112,7 @@ function love.draw()
             "center"
         )
     end
-
+    
     love.graphics.print(
         tostring(player_1_score),
         VIRTUAL_WIDTH/2 - 50,
@@ -117,11 +124,24 @@ function love.draw()
         VIRTUAL_WIDTH/2 + 30,
         VIRTUAL_HEIGHT/3
     )
-
+    
     player_1:render()
     player_2:render()
-
+    
     ball:render()
-
+    
+    displayFPS()
+    
     push:apply("end")
+end
+
+
+function displayFPS()
+    love.graphics.setFont(small_font)
+    love.graphics.setColor(0, 255/255, 0, 255/255)
+    love.graphics.print(
+        "FPS: "..tostring(love.timer.getFPS()),
+        10,
+        10
+    )
 end
