@@ -120,6 +120,20 @@ function love.update(dt)
         ball:update(dt)
     end
 
+    if ball.x < 0 then
+        serving_player = 1
+        player_1_score = player_1_score + 1
+        ball:reset()
+        game_state = "start"
+    end
+
+    if ball.x > VIRTUAL_WIDTH then
+        serving_player = 2
+        player_2_score = player_2_score + 1
+        ball:reset()
+        game_state = "start"
+    end
+
     player_1:update(dt)
     player_2:update(dt)
 end
@@ -152,7 +166,7 @@ function love.draw()
     )
     
     love.graphics.print(
-        tostring(player_1_score),
+        tostring(player_2_score),
         VIRTUAL_WIDTH/2 + 30,
         VIRTUAL_HEIGHT/3
     )
