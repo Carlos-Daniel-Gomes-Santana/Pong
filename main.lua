@@ -23,6 +23,19 @@ function love.keypressed(key)
             game_state = "serve"
         elseif game_state == "serve" then
             game_state = "play"
+        elseif game_state == "done" then
+            game_state = "serve"
+
+            ball:reset()
+
+            player_1_score = 0
+            player_2_score = 0
+
+            if winner == 1 then
+                serving_player = 2
+            else
+                serving_player = 1
+            end
         end
     end
 end
@@ -30,7 +43,7 @@ end
 
 function love.load()
     math.randomseed(os.time())
-    
+
     game_state = "start"
 
     serving_player = math.random(1, 2)
@@ -46,8 +59,8 @@ function love.load()
         FONT_FILE, 8
     )
 
-    score_font = love.graphics.newFont(
-        FONT_FILE, 32
+    large_font = love.graphics.newFont(
+        FONT_FILE, 26
     )
 
 
@@ -123,21 +136,32 @@ function love.update(dt)
             ball.speed_y = -ball.speed_y
         end
 
+        if ball.x < 0 then
+            serving_player = 1
+            player_2_score = player_2_score + 1
+
+            if player_2_score == 7 then
+                winner = 2
+                game_state = "done"
+            else
+                game_state = "serve"
+                ball:reset()
+            end
+        end
+    
+        if ball.x > VIRTUAL_WIDTH then
+            serving_player = 2
+            player_1_score = player_1_score + 1
+            if player_1_score == 7 then
+                winner = 1
+                game_state = "done"
+            else
+                game_state = "serve"
+                ball:reset()
+            end
+        end
+
         ball:update(dt)
-    end
-
-    if ball.x < 0 then
-        serving_player = 1
-        player_1_score = player_1_score + 1
-        ball:reset()
-        game_state = "start"
-    end
-
-    if ball.x > VIRTUAL_WIDTH then
-        serving_player = 2
-        player_2_score = player_2_score + 1
-        ball:reset()
-        game_state = "start"
     end
 
     player_1:update(dt)
@@ -155,7 +179,7 @@ function love.draw()
         255/255
     )
     
-    love.graphics.setFont(score_font)
+    love.graphics.setFont(large_font)
     
     displayScore()
     if game_state == "start" then
@@ -183,7 +207,18 @@ function love.draw()
             "center"
         )
     elseif game_state == "play" then
-
+    elseif game_state == "done" then
+        love.graphics.setFont(large_font)
+        love.graphics.printf(
+            "Player "..tostring(winner).." wins!",
+            0, 10, VIRTUAL_WIDTH,
+            "center"
+        )
+        love.graphics.printf(
+            "Press Enter to restart!",
+            0, 30, VIRTUAL_WIDTH,
+            "center"
+        )
     end
     
     player_1:render()
