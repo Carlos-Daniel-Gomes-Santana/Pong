@@ -20,19 +20,20 @@ function love.keypressed(key)
         love.event.quit()
     elseif key == "enter" or key == "return" then
         if game_state == "start" then
+            game_state = "serve"
+        elseif game_state == "serve" then
             game_state = "play"
-        else
-            game_state = "start"
-
-            ball:reset()
-            
         end
     end
 end
 
 
 function love.load()
+    math.randomseed(os.time())
+    
     game_state = "start"
+
+    serving_player = math.random(1, 2)
 
     player_1_score, player_2_score = 0, 0
 
@@ -49,7 +50,6 @@ function love.load()
         FONT_FILE, 32
     )
 
-    math.randomseed(os.time())
 
     love.graphics.setFont(small_font)
 
@@ -83,8 +83,14 @@ function love.update(dt)
     else
         player_2.speed_y = 0
     end
-    
-    if game_state == "play" then
+    if game_state == "serve" then
+        ball.speed_y = math.random(50,-50)
+        if serving_player == 1 then
+            ball.speed_x = math.random(140, 200)
+        else
+            ball.speed_x = -math.random(140, 200)
+        end
+    elseif game_state == "play" then
         if ball:collides(player_1) then
             ball.speed_x = -ball.speed_x*1.03
             ball.x = player_1.x + 5
@@ -151,25 +157,34 @@ function love.draw()
     
     love.graphics.setFont(score_font)
     
+    displayScore()
     if game_state == "start" then
+        love.graphics.setFont(small_font)
         love.graphics.printf(
-            "Hello Pong!", 0,
-            20, VIRTUAL_WIDTH,
+            "Hello Pong!",
+            0, 20, VIRTUAL_WIDTH,
             "center"
         )
+        love.graphics.printf(
+            "Press Enter to start!",
+            0, 10, VIRTUAL_WIDTH,
+            "center"
+        )
+    elseif game_state == "serve" then
+        love.graphics.setFont(small_font)
+        love.graphics.printf(
+            "Player "..tostring(serving_player).."'s serve!",
+            0, 10, VIRTUAL_WIDTH,
+            "center"
+        )
+        love.graphics.printf(
+            "Press Enter to serve!",
+            0, 20, VIRTUAL_WIDTH,
+            "center"
+        )
+    elseif game_state == "play" then
+
     end
-    
-    love.graphics.print(
-        tostring(player_1_score),
-        VIRTUAL_WIDTH/2 - 50,
-        VIRTUAL_HEIGHT/3
-    )
-    
-    love.graphics.print(
-        tostring(player_2_score),
-        VIRTUAL_WIDTH/2 + 30,
-        VIRTUAL_HEIGHT/3
-    )
     
     player_1:render()
     player_2:render()
@@ -189,5 +204,19 @@ function displayFPS()
         "FPS: "..tostring(love.timer.getFPS()),
         10,
         10
+    )
+end
+
+function displayScore()
+    love.graphics.print(
+        tostring(player_1_score),
+        VIRTUAL_WIDTH/2 - 50,
+        VIRTUAL_HEIGHT/3
+    )
+    
+    love.graphics.print(
+        tostring(player_2_score),
+        VIRTUAL_WIDTH/2 + 30,
+        VIRTUAL_HEIGHT/3
     )
 end
